@@ -1,26 +1,44 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
-import federation from '@originjs/vite-plugin-federation'
+import { federation } from '@module-federation/vite'
 
 export default defineConfig({
   plugins: [
     react(),
     federation({
       name: 'host',
+      filename: 'remoteEntry.js',
       remotes: {
-        piecesRemote: 'http://localhost:3001/assets/remoteEntry.js',
-        creationsRemote: 'http://localhost:3002/assets/remoteEntry.js',
-        tourGuideRemote: 'http://localhost:3003/assets/remoteEntry.js',
+        piecesRemote: {
+          type: 'module',
+          name: 'piecesRemote',
+          entry: `${process.env.VITE_PIECES_REMOTE_URL}/assets/remoteEntry.js`,
+          entryGlobalName: 'piecesRemote',
+          shareScope: 'default',
+        },
+        creationsRemote: {
+          type: 'module',
+          name: 'creationsRemote',
+          entry: `${process.env.VITE_CREATIONS_REMOTE_URL}/assets/remoteEntry.js`,
+          entryGlobalName: 'creationsRemote',
+          shareScope: 'default',
+        },
+        tourGuideRemote: {
+          type: 'module',
+          name: 'tourGuideRemote',
+          entry: `${process.env.VITE_TOUR_GUIDE_REMOTE_URL}/assets/remoteEntry.js`,
+          entryGlobalName: 'tourGuideRemote',
+          shareScope: 'default',
+        },
       },
-      shared: {
-        react: { singleton: true, eager: true },
-        'react-dom': { singleton: true, eager: true },
-        'pixel-retroui': { singleton: true, eager: false },
-        '@mudlabs/ui': { singleton: true, eager: false },
-      },
+      shared: ['react', 'react-dom', 'mudlabs-ui'],
     }),
   ],
+  server: {
+    port: Number(process.env.VITE_PORT) || 3000,
+    origin: `http://localhost:${process.env.VITE_PORT || 3000}`,
+  },
   build: {
-    target: 'esnext',
+    target: 'chrome89',
   },
 })
