@@ -35,8 +35,8 @@ export default defineConfig({
     }),
   ],
   server: {
-    port: Number(process.env.VITE_PORT) || 3000,
-    origin: `http://localhost:${process.env.VITE_PORT || 3000}`,
+    port: 3000,
+    origin: 'http://localhost:3000',
   },
   build: {
     target: 'chrome89',
